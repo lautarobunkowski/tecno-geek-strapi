@@ -485,57 +485,75 @@ export interface PluginUsersPermissionsUser
   };
 }
 
-export interface ApiAboutAbout extends Struct.SingleTypeSchema {
-  collectionName: 'abouts';
+export interface ApiCategoriaCategoria extends Struct.CollectionTypeSchema {
+  collectionName: 'categorias';
   info: {
-    singularName: 'about';
-    pluralName: 'abouts';
-    displayName: 'About';
-    description: 'Write about yourself and the content you create';
-  };
-  options: {
-    draftAndPublish: false;
-  };
-  attributes: {
-    title: Schema.Attribute.String;
-    blocks: Schema.Attribute.DynamicZone<
-      ['shared.media', 'shared.quote', 'shared.rich-text', 'shared.slider']
-    >;
-    createdAt: Schema.Attribute.DateTime;
-    updatedAt: Schema.Attribute.DateTime;
-    publishedAt: Schema.Attribute.DateTime;
-    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
-      Schema.Attribute.Private;
-    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
-      Schema.Attribute.Private;
-    locale: Schema.Attribute.String;
-    localizations: Schema.Attribute.Relation<'oneToMany', 'api::about.about'>;
-  };
-}
-
-export interface ApiArticleArticle extends Struct.CollectionTypeSchema {
-  collectionName: 'articles';
-  info: {
-    singularName: 'article';
-    pluralName: 'articles';
-    displayName: 'Article';
-    description: 'Create your blog content';
+    singularName: 'categoria';
+    pluralName: 'categorias';
+    displayName: 'Categor\u00EDa';
+    description: '';
   };
   options: {
     draftAndPublish: true;
   };
   attributes: {
-    title: Schema.Attribute.String;
-    description: Schema.Attribute.Text &
-      Schema.Attribute.SetMinMaxLength<{
-        maxLength: 80;
-      }>;
-    slug: Schema.Attribute.UID<'title'>;
-    cover: Schema.Attribute.Media<'images' | 'files' | 'videos'>;
-    author: Schema.Attribute.Relation<'manyToOne', 'api::author.author'>;
-    category: Schema.Attribute.Relation<'manyToOne', 'api::category.category'>;
-    blocks: Schema.Attribute.DynamicZone<
-      ['shared.media', 'shared.quote', 'shared.rich-text', 'shared.slider']
+    nombre: Schema.Attribute.String &
+      Schema.Attribute.Required &
+      Schema.Attribute.Unique;
+    descripcion: Schema.Attribute.Text;
+    imagen: Schema.Attribute.Media<'images' | 'files'>;
+    sub_categorias: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::sub-categoria.sub-categoria'
+    >;
+    productos: Schema.Attribute.Relation<'oneToMany', 'api::producto.producto'>;
+    createdAt: Schema.Attribute.DateTime;
+    updatedAt: Schema.Attribute.DateTime;
+    publishedAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    locale: Schema.Attribute.String;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::categoria.categoria'
+    >;
+  };
+}
+
+export interface ApiProductoProducto extends Struct.CollectionTypeSchema {
+  collectionName: 'productos';
+  info: {
+    singularName: 'producto';
+    pluralName: 'productos';
+    displayName: 'Producto';
+    description: '';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    nombre: Schema.Attribute.String &
+      Schema.Attribute.Required &
+      Schema.Attribute.Unique;
+    descripcion: Schema.Attribute.Text;
+    precio: Schema.Attribute.Integer & Schema.Attribute.Required;
+    imagen: Schema.Attribute.Media<'images' | 'files'> &
+      Schema.Attribute.Required;
+    SKU: Schema.Attribute.String &
+      Schema.Attribute.Private &
+      Schema.Attribute.Unique;
+    disponibilidad: Schema.Attribute.Boolean &
+      Schema.Attribute.Required &
+      Schema.Attribute.DefaultTo<true>;
+    sub_categoria: Schema.Attribute.Relation<
+      'manyToOne',
+      'api::sub-categoria.sub-categoria'
+    >;
+    categoria: Schema.Attribute.Relation<
+      'manyToOne',
+      'api::categoria.categoria'
     >;
     createdAt: Schema.Attribute.DateTime;
     updatedAt: Schema.Attribute.DateTime;
@@ -547,55 +565,33 @@ export interface ApiArticleArticle extends Struct.CollectionTypeSchema {
     locale: Schema.Attribute.String;
     localizations: Schema.Attribute.Relation<
       'oneToMany',
-      'api::article.article'
+      'api::producto.producto'
     >;
   };
 }
 
-export interface ApiAuthorAuthor extends Struct.CollectionTypeSchema {
-  collectionName: 'authors';
+export interface ApiSubCategoriaSubCategoria
+  extends Struct.CollectionTypeSchema {
+  collectionName: 'sub_categorias';
   info: {
-    singularName: 'author';
-    pluralName: 'authors';
-    displayName: 'Author';
-    description: 'Create authors for your content';
+    singularName: 'sub-categoria';
+    pluralName: 'sub-categorias';
+    displayName: 'Sub Categoria';
   };
   options: {
-    draftAndPublish: false;
+    draftAndPublish: true;
   };
   attributes: {
-    name: Schema.Attribute.String;
-    avatar: Schema.Attribute.Media<'images' | 'files' | 'videos'>;
-    email: Schema.Attribute.String;
-    articles: Schema.Attribute.Relation<'oneToMany', 'api::article.article'>;
-    createdAt: Schema.Attribute.DateTime;
-    updatedAt: Schema.Attribute.DateTime;
-    publishedAt: Schema.Attribute.DateTime;
-    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
-      Schema.Attribute.Private;
-    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
-      Schema.Attribute.Private;
-    locale: Schema.Attribute.String;
-    localizations: Schema.Attribute.Relation<'oneToMany', 'api::author.author'>;
-  };
-}
-
-export interface ApiCategoryCategory extends Struct.CollectionTypeSchema {
-  collectionName: 'categories';
-  info: {
-    singularName: 'category';
-    pluralName: 'categories';
-    displayName: 'Category';
-    description: 'Organize your content into categories';
-  };
-  options: {
-    draftAndPublish: false;
-  };
-  attributes: {
-    name: Schema.Attribute.String;
-    slug: Schema.Attribute.UID;
-    articles: Schema.Attribute.Relation<'oneToMany', 'api::article.article'>;
-    description: Schema.Attribute.Text;
+    nombre: Schema.Attribute.String &
+      Schema.Attribute.Required &
+      Schema.Attribute.Unique;
+    descripcion: Schema.Attribute.Text;
+    imagen: Schema.Attribute.Media<'images' | 'files'>;
+    categoria: Schema.Attribute.Relation<
+      'manyToOne',
+      'api::categoria.categoria'
+    >;
+    productos: Schema.Attribute.Relation<'oneToMany', 'api::producto.producto'>;
     createdAt: Schema.Attribute.DateTime;
     updatedAt: Schema.Attribute.DateTime;
     publishedAt: Schema.Attribute.DateTime;
@@ -606,36 +602,8 @@ export interface ApiCategoryCategory extends Struct.CollectionTypeSchema {
     locale: Schema.Attribute.String;
     localizations: Schema.Attribute.Relation<
       'oneToMany',
-      'api::category.category'
+      'api::sub-categoria.sub-categoria'
     >;
-  };
-}
-
-export interface ApiGlobalGlobal extends Struct.SingleTypeSchema {
-  collectionName: 'globals';
-  info: {
-    singularName: 'global';
-    pluralName: 'globals';
-    displayName: 'Global';
-    description: 'Define global settings';
-  };
-  options: {
-    draftAndPublish: false;
-  };
-  attributes: {
-    siteName: Schema.Attribute.String & Schema.Attribute.Required;
-    favicon: Schema.Attribute.Media<'images' | 'files' | 'videos'>;
-    siteDescription: Schema.Attribute.Text & Schema.Attribute.Required;
-    defaultSeo: Schema.Attribute.Component<'shared.seo', false>;
-    createdAt: Schema.Attribute.DateTime;
-    updatedAt: Schema.Attribute.DateTime;
-    publishedAt: Schema.Attribute.DateTime;
-    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
-      Schema.Attribute.Private;
-    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
-      Schema.Attribute.Private;
-    locale: Schema.Attribute.String;
-    localizations: Schema.Attribute.Relation<'oneToMany', 'api::global.global'>;
   };
 }
 
@@ -1014,11 +982,9 @@ declare module '@strapi/strapi' {
       'plugin::users-permissions.permission': PluginUsersPermissionsPermission;
       'plugin::users-permissions.role': PluginUsersPermissionsRole;
       'plugin::users-permissions.user': PluginUsersPermissionsUser;
-      'api::about.about': ApiAboutAbout;
-      'api::article.article': ApiArticleArticle;
-      'api::author.author': ApiAuthorAuthor;
-      'api::category.category': ApiCategoryCategory;
-      'api::global.global': ApiGlobalGlobal;
+      'api::categoria.categoria': ApiCategoriaCategoria;
+      'api::producto.producto': ApiProductoProducto;
+      'api::sub-categoria.sub-categoria': ApiSubCategoriaSubCategoria;
       'admin::permission': AdminPermission;
       'admin::user': AdminUser;
       'admin::role': AdminRole;
